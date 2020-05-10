@@ -3,36 +3,30 @@ package com.strangegrotto.clijournal.model;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Representation of a journal entry on the filesystem, returned by {@link EntryStore}
  */
 public class Entry {
     private final Path filepath;
-    private final LocalDateTime creationTimestamp;
-    private final String name;
-    private final List<String> tags;
+    private final EntryMetadata metadata;
 
-    public Entry(Path filepath, LocalDateTime creationTimestamp, String name, List<String> tags) {
+    public Entry(Path filepath, EntryMetadata metadata) {
         this.filepath = filepath;
-        this.creationTimestamp = creationTimestamp;
-        this.name = name;
-        this.tags = tags;
+        this.metadata = metadata;
     }
 
     public Path getFilepath() {
         return filepath;
     }
 
-    public LocalDateTime getCreationTimestamp() {
-        return creationTimestamp;
+    public String getId() {
+        return this.filepath.getFileName().toString();
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public List<String> getTags() {
-        return tags;
+    public EntryMetadata getMetadata() {
+        return metadata;
     }
 }
+
