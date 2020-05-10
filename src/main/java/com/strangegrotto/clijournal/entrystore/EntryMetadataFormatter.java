@@ -1,4 +1,4 @@
-package com.strangegrotto.clijournal.model;
+package com.strangegrotto.clijournal.entrystore;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
@@ -7,7 +7,6 @@ import com.google.common.io.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;

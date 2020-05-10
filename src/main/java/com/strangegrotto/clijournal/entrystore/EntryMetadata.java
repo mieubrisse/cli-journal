@@ -1,11 +1,7 @@
-package com.strangegrotto.clijournal.model;
-
-import com.google.common.collect.Sets;
-import com.google.common.io.Files;
+package com.strangegrotto.clijournal.entrystore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.*;
 
 public class EntryMetadata {

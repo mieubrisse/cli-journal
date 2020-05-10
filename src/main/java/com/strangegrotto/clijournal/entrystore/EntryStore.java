@@ -1,4 +1,4 @@
-package com.strangegrotto.clijournal.model;
+package com.strangegrotto.clijournal.entrystore;
 
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 

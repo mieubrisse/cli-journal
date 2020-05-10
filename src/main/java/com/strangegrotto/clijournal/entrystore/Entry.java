@@ -1,9 +1,6 @@
-package com.strangegrotto.clijournal.model;
+package com.strangegrotto.clijournal.entrystore;
 
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Representation of a journal entry on the filesystem, returned by {@link EntryStore}
