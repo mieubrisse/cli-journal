@@ -3,18 +3,96 @@
  */
 package com.strangegrotto.clijournal;
 
+import com.google.common.collect.Sets;
+import com.strangegrotto.clijournal.commands.CommandParser;
+import com.strangegrotto.clijournal.commands.CommandResultMetadata;
+import com.strangegrotto.clijournal.commands.CommandResultsRecord;
+import com.strangegrotto.clijournal.commands.verbs.ListEntriesCommand;
+import com.strangegrotto.clijournal.commands.verbs.ListTagsCommand;
+import com.strangegrotto.clijournal.commands.verbs.QuitCommand;
+import com.strangegrotto.clijournal.entrystore.EntryStore;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 public class Main {
-    public String getGreeting() {
-        return "Hello world.";
+    private static final String CONFIG_FILENAME = ".clijournal";
+    private static Set<String> BLACKLISTED_FILENAME_PATTERNS = Sets.newHashSet(
+            ".*\\.swp",
+            "^\\.git"
+    );
+
+    public static void main(String[] args) throws IOException {
+        Path journalDirpath = getJourndalDirpath();
+        // TODO handle this nicely???
+        EntryStore entryStore = new EntryStore(journalDirpath, BLACKLISTED_FILENAME_PATTERNS);
+        CommandResultsRecord resultsRecord = new CommandResultsRecord();
+        CommandParser commandParser = new CommandParser(resultsRecord).registerCommand(
+                new ListEntriesCommand(entryStore)
+        ).registerCommand(
+                new ListTagsCommand(entryStore)
+        ).registerCommand(
+                new QuitCommand()
+        );
+
+        Optional<List<String>> endArgsOpt = Optional.empty();
+        Scanner scanner = new Scanner(System.in);
+        while (!endArgsOpt.isPresent()) {
+            // TODO nicely catch ctrl-c and ctrl-d
+            System.out.print("\n>> ");
+            String userInput = scanner.next();
+            List<String> tokenizedInput = Arrays.asList(userInput.trim().split("\\s+"));
+            if (tokenizedInput.size() == 0) {
+                continue;
+            }
+
+            CommandResultMetadata cmdResult = commandParser.parse(tokenizedInput);
+            endArgsOpt = cmdResult.getEndArgs();
+        }
+
+        List<String> endArgs = endArgsOpt.get();
+        if (endArgs.size() > 0) {
+            Runtime.getRuntime().exec(endArgs.toArray(new String[0]));
+        }
     }
 
-    public static void main(String[] args) {
-        ArgumentParser parser = ArgumentParsers.newFor("Journal CLI").build()
-                .description("CLI for interacting with a file-based journalling system");
+    // TODO Make this have a nice intro flow where the user can set the journal dirpath
+    private static Path getJourndalDirpath() {
+        // TODO Replace with reading/writing YAML
+        String homeDirpath = System.getProperty("user.home");
+        Path configFilepath = Paths.get(homeDirpath, CONFIG_FILENAME).toAbsolutePath();
+        if (!Files.isRegularFile(configFilepath)) {
+            // TODO implement giving the user a nice introduction and allow them to set journal dirpath!
+            throw new RuntimeException("Setting journal dirpath not implemented yet!");
+        }
 
-        System.out.println(new Main().getGreeting());
+        List<String> configLines;
+        try {
+            configLines = Files.readAllLines(configFilepath);
+        } catch (IOException e) {
+            // TODO implement giving the user a nice introduction and allow them to set journal dirpath!
+            throw new RuntimeException("Failed to open config iflepath!");
+        }
+        if (configLines.size() == 0) {
+            // TODO rather than raising an exception, kick the user over to defining the journal path
+            throw new RuntimeException("Config file found, but was empty!");
+        }
+
+        Path journalDirpath = Paths.get(configLines.get(0));
+        if (!Files.isDirectory(journalDirpath)) {
+            // TODO kick user over to flow of setting config file properly
+            throw new RuntimeException(
+                    String.format(
+                            "Journal directory specified in config file '%s' is not a directory",
+                            journalDirpath
+                    )
+            );
+        }
+        return journalDirpath;
     }
 }

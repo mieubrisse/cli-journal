@@ -26,7 +26,7 @@ public class EntryStore {
 
 
     private final Path journalDirpath;
-    private final List<String> blacklistedFilenamePatterns;
+    private final Set<String> blacklistedFilenamePatterns;
     private final EntryMetadataFormatter metadataFormatter;
     private final Set<String> filenames;
     private final SetMultimap<String, String> nameIndex;
@@ -38,7 +38,7 @@ public class EntryStore {
      * @param blacklistedFilenamePatterns Regexes containing file names which will not be loaded into the store
      * @throws IOException if an error reading the entries from the filesystem occurs
      */
-    public EntryStore(Path journalDirpath, List<String> blacklistedFilenamePatterns) throws IOException {
+    public EntryStore(Path journalDirpath, Set<String> blacklistedFilenamePatterns) throws IOException {
         this.journalDirpath = journalDirpath.toAbsolutePath();
         this.blacklistedFilenamePatterns = blacklistedFilenamePatterns;
         this.metadataFormatter = new EntryMetadataFormatter(
@@ -134,7 +134,7 @@ public class EntryStore {
         );
     }
 
-    private static boolean isValidJournalEntry(Path path, List<String> blacklistedFilenamePatterns) {
+    private static boolean isValidJournalEntry(Path path, Set<String> blacklistedFilenamePatterns) {
         String filename = path.getFileName().toString();
         for (String pattern : blacklistedFilenamePatterns) {
             if (filename.matches(pattern)) {
