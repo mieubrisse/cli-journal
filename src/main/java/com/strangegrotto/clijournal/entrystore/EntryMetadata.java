@@ -2,7 +2,8 @@ package com.strangegrotto.clijournal.entrystore;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 
 public class EntryMetadata {
     private static final LocalDateTime MISSING_TIMESTAMP_DEFAULT_DATE = LocalDateTime.of(1970, 1, 1, 0, 0, 0);

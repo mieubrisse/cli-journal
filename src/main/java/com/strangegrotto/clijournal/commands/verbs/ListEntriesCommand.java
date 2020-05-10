@@ -1,18 +1,11 @@
 package com.strangegrotto.clijournal.commands.verbs;
 
-import com.strangegrotto.clijournal.commands.ListingCmdResultType;
 import com.strangegrotto.clijournal.entrystore.Entry;
-import com.strangegrotto.clijournal.entrystore.EntryMetadata;
 import com.strangegrotto.clijournal.entrystore.EntryStore;
-import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class ListEntriesCommand extends AbstractEntryListingCommand {
     private final EntryStore entryStore;

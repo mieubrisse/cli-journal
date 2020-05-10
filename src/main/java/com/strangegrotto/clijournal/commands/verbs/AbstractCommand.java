@@ -2,7 +2,6 @@ package com.strangegrotto.clijournal.commands.verbs;
 
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.Argument;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;

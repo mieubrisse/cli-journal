@@ -3,7 +3,6 @@
  */
 package com.strangegrotto.clijournal;
 
-import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import com.strangegrotto.clijournal.commands.CommandParser;
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
@@ -11,8 +10,6 @@ import com.strangegrotto.clijournal.commands.CommandResultsRecord;
 import com.strangegrotto.clijournal.commands.ResultReferenceTranslator;
 import com.strangegrotto.clijournal.commands.verbs.*;
 import com.strangegrotto.clijournal.entrystore.EntryStore;
-import net.sourceforge.argparse4j.ArgumentParsers;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -20,7 +17,10 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class Main {
     private static final String CONFIG_FILENAME = ".clijournal";
@@ -43,6 +43,8 @@ public class Main {
                 new FindEntriesCommand(entryStore)
         ).registerCommand(
                 new VimCommand(entryStore, referenceTranslator)
+        ).registerCommand(
+                new NewEntryCommand(entryStore, referenceTranslator)
         ).registerCommand(
                 new QuitCommand()
         );

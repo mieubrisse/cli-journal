@@ -94,11 +94,13 @@ class EntryMetadataFormatter {
             timestampStr = "";
         }
         String tagsStr = String.join(this.tagSeparator, metadata.getTags());
-        return String.join(
+        String extensionLess = String.join(
                 this.metadataSeparator,
                 metadata.getNameSansExt(),
                 timestampStr,
                 tagsStr
-        ) + metadata.getExtension();
+        );
+        String extension = metadata.getExtension();
+        return extension.length() > 0 ? extensionLess + "." + metadata.getExtension() : extensionLess;
     }
 }

@@ -1,22 +1,12 @@
 package com.strangegrotto.clijournal.commands.verbs;
 
-import com.google.common.collect.Ordering;
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import com.strangegrotto.clijournal.commands.ListingCmdResultType;
 import com.strangegrotto.clijournal.commands.ListingCmdResults;
-import com.strangegrotto.clijournal.entrystore.Entry;
-import net.sourceforge.argparse4j.impl.Arguments;
-import net.sourceforge.argparse4j.inf.Argument;
-import net.sourceforge.argparse4j.inf.ArgumentAction;
-import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class AbstractListingCommand<T> extends AbstractCommand {

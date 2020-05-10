@@ -3,14 +3,11 @@ package com.strangegrotto.clijournal.commands.verbs;
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import com.strangegrotto.clijournal.commands.ListingCmdResultType;
 import com.strangegrotto.clijournal.commands.ResultReferenceTranslator;
-import com.strangegrotto.clijournal.entrystore.Entry;
 import com.strangegrotto.clijournal.entrystore.EntryStore;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
