@@ -19,10 +19,10 @@ public class EntryStore {
     private static final String METADATA_SEPARATOR = "~";
     private static final String TAG_SEPARATOR = ",";
     private static final String PREFERRED_TIMESTAMP_FORMAT = "yyyy-MM-dd_HH-mm-ss";
-    private static final Set<String> ACCEPTED_TIMESTAMP_FORMATS = Sets.newHashSet(
+    private static final List<String> ACCEPTED_TIMESTAMP_FORMATS = Arrays.asList(
+            "yyyy-MM-dd_HH-mm",
             PREFERRED_TIMESTAMP_FORMAT,
-            "yyyy-MM-dd_HH:mm:ss",
-            "yyyy-MM-dd"
+            "yyyy-MM-dd_HH:mm:ss"
     );
 
 

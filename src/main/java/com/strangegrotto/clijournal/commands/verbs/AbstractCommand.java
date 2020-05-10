@@ -29,6 +29,8 @@ public abstract class AbstractCommand implements Command {
             parsedArgs = this.argParser.parseArgs(args.toArray(new String[0]));
         } catch (ArgumentParserException e) {
             argParser.handleError(e);
+            // For some reason, we get weird ordering of output lines if this isn't flushed right here
+            System.out.flush();
             return CommandResultMetadata.empty();
         }
         return this.runCommandLogic(parsedArgs);

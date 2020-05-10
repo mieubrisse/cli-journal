@@ -41,6 +41,11 @@ public abstract class AbstractEntryListingCommand extends AbstractListingCommand
     private static final LocalDateTime MISSING_TIMESTAMP_SORT_VALUE = LocalDateTime.of(1970, 1, 1, 0, 0, 0);
     private static final String MISSING_TIMESTAMP_RENDER_STR = "  <no timestamp>   ";
 
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
     public AbstractEntryListingCommand(String alias, String helpStr) {
         super(alias, helpStr);
     }
@@ -102,10 +107,14 @@ public abstract class AbstractEntryListingCommand extends AbstractListingCommand
         String tagsStr = String.join(" ", metadata.getTags());
 
         return String.format(
-                "%s    %s    %s",
+                "%s%s    %s%s    %s%s%s",
+                ANSI_YELLOW,
                 timestampStr,
+                ANSI_WHITE,
                 pseudoName,
-                tagsStr
+                ANSI_PURPLE,
+                tagsStr,
+                ANSI_RESET
         );
     }
 

@@ -7,9 +7,8 @@ import com.google.common.io.Files;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Class to translate between entry metadata and an on-disk filename
@@ -17,7 +16,7 @@ import java.util.StringJoiner;
 class EntryMetadataFormatter {
     private final String metadataSeparator;
     private final String tagSeparator;
-    private final DateTimeFormatter parseFormatter;
+    private final List<DateTimeFormatter> parseFormatters;
     private final DateTimeFormatter formatFormatter;
 
     /**
@@ -29,7 +28,7 @@ class EntryMetadataFormatter {
     EntryMetadataFormatter(
             String metadataSeparator,
             String tagSeparator,
-            Set<String> acceptedTimestampFormats,
+            List<String> acceptedTimestampFormats,
             String preferredTimestampFormat) {
         Preconditions.checkState(
                 metadataSeparator != tagSeparator,
@@ -46,17 +45,15 @@ class EntryMetadataFormatter {
         this.metadataSeparator = metadataSeparator;
         this.tagSeparator = tagSeparator;
 
+        this.formatFormatter = DateTimeFormatter.ofPattern(preferredTimestampFormat);
+
         // For simplicity, rather than checking if preferredTimestampFormat is contained in acceptedTimestampFormats,
         //  just add it in
-        Set<String> allFormats = Sets.newHashSet(acceptedTimestampFormats);
-        allFormats.add(preferredTimestampFormat);
-
-        StringJoiner joiner = new StringJoiner("");
-        allFormats.stream()
-                .map(format -> "[" + format + "]")
-                .forEach(joiner::add);
-        this.parseFormatter = DateTimeFormatter.ofPattern(joiner.toString());
-        this.formatFormatter = DateTimeFormatter.ofPattern(preferredTimestampFormat);
+        List<DateTimeFormatter> parseFormatters = acceptedTimestampFormats.stream()
+                .map(DateTimeFormatter::ofPattern)
+                .collect(Collectors.toList());
+        parseFormatters.add(this.formatFormatter);
+        this.parseFormatters = parseFormatters;
     }
 
     public EntryMetadata parseMetadata(String filename) {
@@ -67,11 +64,12 @@ class EntryMetadataFormatter {
         String nameSansExt = nameFragments[0];
 
         String creationTimestampStr = nameFragments.length >= 2 ? nameFragments[1] : "";
-        Optional<LocalDateTime> creationTimestamp;
-        try {
-            creationTimestamp = Optional.of(LocalDateTime.parse(creationTimestampStr, this.parseFormatter));
-        } catch (DateTimeParseException e) {
-            creationTimestamp = Optional.empty();
+        Optional<LocalDateTime> creationTimestamp = Optional.empty();
+        for (DateTimeFormatter parseFormatter : this.parseFormatters) {
+            try {
+                creationTimestamp = Optional.of(LocalDateTime.parse(creationTimestampStr, parseFormatter));
+                break;
+            } catch (DateTimeParseException e) {}
         }
 
         String tagsStr = nameFragments.length >= 3 ? nameFragments[2] : "";

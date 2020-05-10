@@ -31,7 +31,6 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         Path journalDirpath = getJourndalDirpath();
-        // TODO handle this nicely???
         EntryStore entryStore = new EntryStore(journalDirpath, BLACKLISTED_FILENAME_PATTERNS);
         CommandResultsRecord resultsRecord = new CommandResultsRecord();
         ResultReferenceTranslator referenceTranslator = new ResultReferenceTranslator(resultsRecord);
@@ -49,30 +48,37 @@ public class Main {
                 new QuitCommand()
         );
 
-        List<String> endArgs = runInputLoop(commandParser);
+        List<String> endArgs = runInputLoop(commandParser, args);
         if (endArgs.size() > 0) {
             Process process = new ProcessBuilder(endArgs).inheritIO().start();
             process.waitFor();
         }
     }
 
-    private static List<String> runInputLoop(CommandParser commandParser) throws IOException {
+    private static List<String> runInputLoop(CommandParser commandParser, String[] cliArgs) throws IOException {
+        boolean useCliArgs = cliArgs.length > 0;
         Optional<List<String>> endArgsOpt = Optional.empty();
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (!endArgsOpt.isPresent()) {
             // TODO nicely catch ctrl-c and ctrl-d
             System.out.print("\n>> ");
 
-            String userInput;
-            userInput = reader.readLine();
-            if (null == userInput) {
-                endArgsOpt = Optional.of(List.of());
-                break;
-            }
+            List<String> tokenizedInput;
+            if (!useCliArgs) {
+                String userInput;
+                userInput = reader.readLine();
+                if (null == userInput) {
+                    endArgsOpt = Optional.of(List.of());
+                    break;
+                }
 
-            List<String> tokenizedInput = Arrays.asList(userInput.trim().split("\\s+"));
-            if (tokenizedInput.size() == 0) {
-                continue;
+                tokenizedInput = Arrays.asList(userInput.trim().split("\\s+"));
+                if (tokenizedInput.size() == 0) {
+                    continue;
+                }
+            } else {
+                tokenizedInput = Arrays.asList(cliArgs);
+                useCliArgs = false;
             }
 
             CommandResultMetadata cmdResult = commandParser.parse(tokenizedInput);
