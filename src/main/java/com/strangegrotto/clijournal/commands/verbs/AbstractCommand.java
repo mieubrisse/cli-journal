@@ -2,7 +2,9 @@ package com.strangegrotto.clijournal.commands.verbs;
 
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import net.sourceforge.argparse4j.ArgumentParsers;
+import net.sourceforge.argparse4j.inf.Argument;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
+import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 
 import java.util.List;
@@ -23,7 +25,14 @@ public abstract class AbstractCommand implements Command {
 
     @Override
     public final CommandResultMetadata execute(List<String> args) {
-        return null;
+        Namespace parsedArgs;
+        try {
+            parsedArgs = this.argParser.parseArgs(args.toArray(new String[0]));
+        } catch (ArgumentParserException e) {
+            // TODO do something more graceful here?
+            return CommandResultMetadata.empty();
+        }
+        return this.runCommandLogic(parsedArgs);
     }
 
     @Override

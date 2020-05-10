@@ -88,7 +88,7 @@ public class ListEntriesCommand extends AbstractListingCommand<Entry> {
     @Override
     protected String renderResult(Entry result, Namespace parsedArgs) {
         EntryMetadata metadata = result.getMetadata();
-        String pseudoName = metadata.getNameSansExt() + metadata.getExtension();
+        String pseudoName = metadata.getNameSansExt() + "." + metadata.getExtension();
         Optional<LocalDateTime> timestampOpt = metadata.getCreationTimestamp();
         String timestampStr;
         if (timestampOpt.isPresent()) {

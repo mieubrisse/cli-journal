@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 public class CommandParser {
-    private static final int HELP_ALIAS_PAD_WIDTH = 25;
+    private static final int HELP_ALIAS_PAD_WIDTH = 15;
 
     private final CommandResultsRecord resultsRecord;
     private final Map<String, Command> aliases;
@@ -25,7 +25,7 @@ public class CommandParser {
             System.out.println();
             for (Map.Entry<String, Command> entry : CommandParser.this.aliases.entrySet()) {
                 String outStr = String.format(
-                        "%" + HELP_ALIAS_PAD_WIDTH + "s%s",
+                        "%-" + HELP_ALIAS_PAD_WIDTH + "s%s",
                         entry.getKey(),
                         entry.getValue().getHelpString()
                 );

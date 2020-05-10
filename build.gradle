@@ -34,5 +34,9 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'com.strangegrotto.clijournal.App'
+    mainClassName = 'com.strangegrotto.clijournal.Main'
+}
+
+run {
+    standardInput = System.in
 }

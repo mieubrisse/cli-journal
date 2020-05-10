@@ -20,6 +20,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public abstract class AbstractListingCommand<T> extends AbstractCommand {
+    private static final int LIST_INDEX_PAD_WIDTH = 6;
 
     public AbstractListingCommand(String alias, String helpStr) {
         super(alias, helpStr);
@@ -36,7 +37,7 @@ public abstract class AbstractListingCommand<T> extends AbstractCommand {
             for (int i = 0; i < results.size(); i++) {
                 T result = results.get(i);
                 String out = String.format(
-                        "%s\t%s",
+                        "%-" + LIST_INDEX_PAD_WIDTH + "s%s",
                         i,
                         this.renderResult(result, parsedArgs)
                 );

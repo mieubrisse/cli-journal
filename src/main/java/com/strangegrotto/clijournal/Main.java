@@ -3,6 +3,7 @@
  */
 package com.strangegrotto.clijournal;
 
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Sets;
 import com.strangegrotto.clijournal.commands.CommandParser;
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
@@ -45,13 +46,21 @@ public class Main {
         while (!endArgsOpt.isPresent()) {
             // TODO nicely catch ctrl-c and ctrl-d
             System.out.print("\n>> ");
-            String userInput = scanner.next();
+            Stopwatch stopwatch = Stopwatch.createStarted();
+            String userInput = scanner.nextLine();
+
+            // TODO Debugging
+            System.out.println("After read line: " + stopwatch.elapsed());
+
             List<String> tokenizedInput = Arrays.asList(userInput.trim().split("\\s+"));
             if (tokenizedInput.size() == 0) {
                 continue;
             }
 
+            System.out.println("Before parse: " + stopwatch.elapsed());
             CommandResultMetadata cmdResult = commandParser.parse(tokenizedInput);
+            System.out.println("After parse: " + stopwatch.elapsed());
+
             endArgsOpt = cmdResult.getEndArgs();
         }
 
