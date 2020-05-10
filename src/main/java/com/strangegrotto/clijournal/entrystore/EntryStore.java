@@ -29,7 +29,7 @@ public class EntryStore {
     private final Path journalDirpath;
     private final Set<String> blacklistedFilenamePatterns;
     private final EntryMetadataFormatter metadataFormatter;
-    private final Set<String> filenames;
+    private final Map<String, EntryMetadata> filenamesAndMetadata; // We keep the metadata here only as a cache
     private final SetMultimap<String, String> nameIndex;
     private final SetMultimap<String, String> tagIndex;
 
@@ -49,7 +49,7 @@ public class EntryStore {
                 PREFERRED_TIMESTAMP_FORMAT
         );
 
-        this.filenames = new HashSet<>();
+        this.filenamesAndMetadata = new HashMap<>();
         this.nameIndex = MultimapBuilder.hashKeys().hashSetValues().build();
         this.tagIndex = MultimapBuilder.hashKeys().hashSetValues().build();
 
@@ -66,13 +66,13 @@ public class EntryStore {
                 .filter(path -> isValidJournalEntry(path, this.blacklistedFilenamePatterns))
                 .collect(Collectors.toList());
 
-        this.filenames.clear();
+        this.filenamesAndMetadata.clear();
         this.nameIndex.clear();
         this.tagIndex.clear();
         for (Path path : entryPaths) {
             String filename = path.getFileName().toString();
             EntryMetadata metadata = this.metadataFormatter.parseMetadata(filename);
-            this.filenames.add(filename);
+            this.filenamesAndMetadata.put(filename, metadata);
             this.nameIndex.put(metadata.getNameSansExt(), filename);
             for (String tag : metadata.getTags()) {
                 this.tagIndex.put(tag, filename);
@@ -81,8 +81,8 @@ public class EntryStore {
     }
 
     public Set<Entry> getAllEntries() {
-        return this.filenames.stream()
-                .map(this::entryFromFilename)
+        return this.filenamesAndMetadata.keySet().stream()
+                .map(this::buildEntry)
                 .collect(Collectors.toSet());
     }
 
@@ -90,16 +90,16 @@ public class EntryStore {
         return this.tagIndex.keySet();
     }
 
-    public Set<Entry> getByIds(Set<String> ids) {
+    public List<Entry> getByIds(List<String> ids) {
         return ids.stream()
-                .filter(this.filenames::contains)
-                .map(this::entryFromFilename)
-                .collect(Collectors.toSet());
+                .filter(this.filenamesAndMetadata::containsKey)
+                .map(this::buildEntry)
+                .collect(Collectors.toList());
     }
 
     public Set<Entry> getByTag(String tag) {
         return this.tagIndex.get(tag).stream()
-                .map(this::entryFromFilename)
+                .map(this::buildEntry)
                 .collect(Collectors.toSet());
     }
 
@@ -107,7 +107,7 @@ public class EntryStore {
         return this.nameIndex.keySet().stream()
                 .filter(name -> name.contains(keyword))
                 .flatMap(matchingName -> this.nameIndex.get(matchingName).stream())
-                .map(this::entryFromFilename)
+                .map(this::buildEntry)
                 .collect(Collectors.toSet());
     }
 
@@ -125,10 +125,12 @@ public class EntryStore {
         return Paths.get(this.journalDirpath.toString(), filename);
     }
 
-    private Entry entryFromFilename(String filename) {
+    // Technically we don't have to pass the metadata in - we could get it from the filename alone - but doing so
+    //  is very slow
+    private Entry buildEntry(String filename) {
         // TODO Cache these values if it's too slow to parse it every time
-        EntryMetadata metadata = this.metadataFormatter.parseMetadata(filename);
         Path absFilepath = Paths.get(this.journalDirpath.toString(), filename);
+        EntryMetadata metadata = this.filenamesAndMetadata.get(filename);
         return new Entry(
                 absFilepath,
                 metadata

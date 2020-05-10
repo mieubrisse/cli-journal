@@ -27,10 +27,6 @@ public abstract class AbstractListingCommand<T> extends AbstractCommand {
     }
 
     @Override
-    protected void configureParser(ArgumentParser argParser) {
-    }
-
-    @Override
     public final CommandResultMetadata runCommandLogic(Namespace parsedArgs) {
         List<T> results = this.getResults(parsedArgs);
         if (results.size() > 0) {

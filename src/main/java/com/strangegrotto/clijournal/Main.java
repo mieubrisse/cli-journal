@@ -8,14 +8,15 @@ import com.google.common.collect.Sets;
 import com.strangegrotto.clijournal.commands.CommandParser;
 import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import com.strangegrotto.clijournal.commands.CommandResultsRecord;
-import com.strangegrotto.clijournal.commands.verbs.ListEntriesCommand;
-import com.strangegrotto.clijournal.commands.verbs.ListTagsCommand;
-import com.strangegrotto.clijournal.commands.verbs.QuitCommand;
+import com.strangegrotto.clijournal.commands.ResultReferenceTranslator;
+import com.strangegrotto.clijournal.commands.verbs.*;
 import com.strangegrotto.clijournal.entrystore.EntryStore;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,47 +29,57 @@ public class Main {
             "^\\.git"
     );
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Path journalDirpath = getJourndalDirpath();
         // TODO handle this nicely???
         EntryStore entryStore = new EntryStore(journalDirpath, BLACKLISTED_FILENAME_PATTERNS);
         CommandResultsRecord resultsRecord = new CommandResultsRecord();
+        ResultReferenceTranslator referenceTranslator = new ResultReferenceTranslator(resultsRecord);
         CommandParser commandParser = new CommandParser(resultsRecord).registerCommand(
                 new ListEntriesCommand(entryStore)
         ).registerCommand(
                 new ListTagsCommand(entryStore)
         ).registerCommand(
+                new FindEntriesCommand(entryStore)
+        ).registerCommand(
+                new VimCommand(entryStore, referenceTranslator)
+        ).registerCommand(
                 new QuitCommand()
         );
 
+        List<String> endArgs = runInputLoop(commandParser);
+        if (endArgs.size() > 0) {
+            Process process = new ProcessBuilder(endArgs).inheritIO().start();
+            process.waitFor();
+        }
+    }
+
+    private static List<String> runInputLoop(CommandParser commandParser) throws IOException {
         Optional<List<String>> endArgsOpt = Optional.empty();
-        Scanner scanner = new Scanner(System.in);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while (!endArgsOpt.isPresent()) {
             // TODO nicely catch ctrl-c and ctrl-d
             System.out.print("\n>> ");
-            Stopwatch stopwatch = Stopwatch.createStarted();
-            String userInput = scanner.nextLine();
 
-            // TODO Debugging
-            System.out.println("After read line: " + stopwatch.elapsed());
+            String userInput;
+            userInput = reader.readLine();
+            if (null == userInput) {
+                endArgsOpt = Optional.of(List.of());
+                break;
+            }
 
             List<String> tokenizedInput = Arrays.asList(userInput.trim().split("\\s+"));
             if (tokenizedInput.size() == 0) {
                 continue;
             }
 
-            System.out.println("Before parse: " + stopwatch.elapsed());
             CommandResultMetadata cmdResult = commandParser.parse(tokenizedInput);
-            System.out.println("After parse: " + stopwatch.elapsed());
 
             endArgsOpt = cmdResult.getEndArgs();
         }
-
-        List<String> endArgs = endArgsOpt.get();
-        if (endArgs.size() > 0) {
-            Runtime.getRuntime().exec(endArgs.toArray(new String[0]));
-        }
+        return endArgsOpt.get();
     }
+
 
     // TODO Make this have a nice intro flow where the user can set the journal dirpath
     private static Path getJourndalDirpath() {

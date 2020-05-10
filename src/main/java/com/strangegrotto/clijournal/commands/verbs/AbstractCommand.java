@@ -17,7 +17,7 @@ public abstract class AbstractCommand implements Command {
     protected AbstractCommand(String alias, String helpStr) {
         this.alias = alias;
         this.helpStr = helpStr;
-        this.argParser = ArgumentParsers.newFor(this.alias).build()
+        this.argParser = ArgumentParsers.newFor(this.alias).terminalWidthDetection(false).build()
                 .defaultHelp(true)
                 .description(helpStr);
         this.configureParser(argParser);
@@ -29,7 +29,7 @@ public abstract class AbstractCommand implements Command {
         try {
             parsedArgs = this.argParser.parseArgs(args.toArray(new String[0]));
         } catch (ArgumentParserException e) {
-            // TODO do something more graceful here?
+            argParser.handleError(e);
             return CommandResultMetadata.empty();
         }
         return this.runCommandLogic(parsedArgs);

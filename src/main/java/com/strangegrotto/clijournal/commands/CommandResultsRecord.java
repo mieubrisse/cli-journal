@@ -14,7 +14,11 @@ public class CommandResultsRecord {
 
     public void observeResult(CommandResultMetadata result) {
         Optional<ListingCmdResults> listingCmdResultsOpt = result.getListingCmdResults();
-        this.lastResults = listingCmdResultsOpt.isPresent() ? listingCmdResultsOpt : this.lastResults;
+
+        // For convenience, we don't record results that didn't return anything
+        if (listingCmdResultsOpt.isPresent() && listingCmdResultsOpt.get().getResultRefValues().size() > 0) {
+            this.lastResults = listingCmdResultsOpt;
+        }
     }
 
     public Optional<ListingCmdResults> getLastListingCmdResults() {
