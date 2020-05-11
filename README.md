@@ -89,7 +89,7 @@ will open `entry1.md` and `entry2.md` simultaneously, in Vim vertical splits. Th
 
 ## Future Development
 * [ ] Easy user onboarding:
-    * [ ] Nice onboarding flow to set up `.clijournal` when not already done
+    * [x] Nice onboarding flow to set up `.clijournal` when not already done
     * [ ] Homebrew installation
 * [ ] Split references into `@entry` and `#tag`, so entry-listing commands don't invalidate tag references & vice versa
 * [ ] Editing:

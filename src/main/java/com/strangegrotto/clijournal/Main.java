@@ -135,6 +135,7 @@ public class Main {
         Path journalDirpath = null;
         while (null == journalDirpath) {
             if (!Files.isRegularFile(CONFIG_FILEPATH)) {
+                System.out.println("No config file detected; running onboarding...");
                 runOnboardingWorkflow(reader);
                 continue;
             }
@@ -154,7 +155,7 @@ public class Main {
             }
 
             Path tentativeJournalDirpath = Paths.get(configLines.get(0));
-            if (!Files.isDirectory(journalDirpath)) {
+            if (!Files.isDirectory(tentativeJournalDirpath)) {
                 System.out.println("Path in config file is not a directory; please enter the *absolute path* to a directory");
                 System.out.println(" to use as your journal.");
                 runJournalConfigurationWorkflow(reader);
@@ -172,8 +173,16 @@ public class Main {
      * @throws IOException if the config filepath couldn't be written during the onboarding workflow (a fatal error)
      */
     private static void runOnboardingWorkflow(BufferedReader reader) throws IOException {
-        System.out.println("Welcome to CLI Journal by mieubrisse!");
-        System.out.println("To get you started, we'll need to set a directory that you'll use as your journal.");
+        System.out.println();
+        System.out.println("    _____  _     _____     ___  _____ _   _______ _   _   ___   _     ");
+        System.out.println("   /  __ \\| |   |_   _|   |_  ||  _  | | | | ___ \\ \\ | | / _ \\ | |    ");
+        System.out.println("   | /  \\/| |     | |       | || | | | | | | |_/ /  \\| |/ /_\\ \\| |    ");
+        System.out.println("   | |    | |     | |       | || | | | | | |    /| . ` ||  _  || |    ");
+        System.out.println("   | \\__/\\| |_____| |_  /\\__/ /\\ \\_/ / |_| | |\\ \\| |\\  || | | || |____");
+        System.out.println("    \\____/\\_____/\\___/  \\____/  \\___/ \\___/\\_| \\_\\_| \\_/\\_| |_/\\_____/");
+        System.out.println();
+        System.out.println("Welcome to CLI Journal by mieubrisse! To get you started, we'll need to set a directory");
+        System.out.println(" that you'll use as your journal.");
         System.out.println();
         System.out.println("If this is your first time using cli-journal, please input the *absolute path* to an ");
         System.out.println(" existing, empty directory that will be your journal. For easy cross-machine syncing,");
@@ -186,7 +195,7 @@ public class Main {
         System.out.println();
         System.out.println("Successfully configured! From here on, running this CLI will always open your journal.");
         System.out.println();
-        System.out.println("To get started, try runnin 'help' to see the available commands.");
+        System.out.println("To get started, try running 'help' to see the available commands.");
         System.out.println("TIP: All commands have a '--help' flag that prints detailed usage information!");
         System.out.println();
     }
@@ -236,8 +245,8 @@ public class Main {
             }
 
             if (numFiles > 0) {
-                System.out.println("This directory contains " + numFiles + " files. If this is your first time");
-                System.out.println(" using CLI Journal, I strongly recommend you start with an empty directory.");
+                System.out.println("This directory contains " + numFiles + " files. If this is your first time using CLI Journal, I");
+                System.out.println(" strongly recommend you start with an empty directory.");
 
                 boolean selectedAffirmative = runYesNoPromptLoop("Continue anyway?", reader);
                 if (!selectedAffirmative) {
@@ -245,8 +254,8 @@ public class Main {
                 }
             }
 
-            System.out.println("You're about to use '" + tentativeJournalDirpath + "' as your journal directory.");
-            System.out.println("You can always change this later by modifying the contents of '" + CONFIG_FILEPATH + "'.");
+            System.out.println("You're about to use '" + tentativeJournalDirpath + "' as your journal directory. You can");
+            System.out.println(" always change this later by modifying the contents of '" + CONFIG_FILEPATH + "'.");
 
             boolean selectedFinalize = runYesNoPromptLoop("Continue?", reader);
             if (!selectedFinalize) {
@@ -276,7 +285,7 @@ public class Main {
             }
 
             switch(decisionInput) {
-                case "Y":
+                case "y":
                     decisionMade = true;
                     selectedAffirmative = true;
                     break;
