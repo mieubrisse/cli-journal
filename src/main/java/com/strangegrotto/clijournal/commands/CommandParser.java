@@ -1,14 +1,16 @@
 package com.strangegrotto.clijournal.commands;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.strangegrotto.clijournal.commands.verbs.Command;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandParser {
     private static final int HELP_ALIAS_PAD_WIDTH = 15;
+    private static final Comparator<Map.Entry<String, Command>> ALIAS_COMPARATOR = Comparator.comparing(
+            entry -> entry.getKey()
+    );
 
     private final CommandResultsRecord resultsRecord;
     private final Map<String, Command> aliases;
@@ -23,9 +25,12 @@ public class CommandParser {
         @Override
         public CommandResultMetadata execute(List<String> args) {
             System.out.println();
-            for (Map.Entry<String, Command> entry : CommandParser.this.aliases.entrySet()) {
+            List<Map.Entry<String, Command>> entryList = new ArrayList<>(CommandParser.this.aliases.entrySet());
+            entryList.sort(ALIAS_COMPARATOR);
+
+            for (Map.Entry<String, Command> entry : entryList) {
                 String outStr = String.format(
-                        "%-" + HELP_ALIAS_PAD_WIDTH + "s%s",
+                        "  %-" + HELP_ALIAS_PAD_WIDTH + "s%s",
                         entry.getKey(),
                         entry.getValue().getHelpString()
                 );

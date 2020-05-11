@@ -12,17 +12,42 @@ will show up in the CLI as:
 2020-03-22 18:56:00       my-test-entry.md     tag1 tag2
 ```
 
-As of 2020-05-10, the tool provides functionality to write new entries with tags, open existing entries in Vim, search entries by name or tag, and list tags & entries.
-
 ## Installation
 TODO
 
 ## Basic Usage
-Start the REPL by running `cli-journal`, then type `help` to show the available commands. All commands can take a `--help` flag to display their options.
+Start the REPL by running `cli-journal`, then type `help` to show the available commands:
 
-_NOTE: for convenience, you can pass in any REPL arguments from the CLI - e.g. `cli-journal ls`_
+```
+>> help
+
+  find           Finds entries matching the given parameters
+  help           Prints help data for all commands
+  ls             Lists all entries in the journal
+  new            Adds a new journal entry with the given parameters
+  quit           Quits the CLI
+  tags           Lists the tags currently in use in the journal
+  vim            Opens the referenced result in vim, using vertical splits if more than one result
+```
+
+All commands can take a `--help` flag to display their options.
+
+_NOTE: for convenience, you can pass in any REPL arguments from the command line - e.g. `cli-journal ls`_
 
 Some example usages below:
+
+### Get help
+```
+>> ls --help
+usage: ls [-h] [-r] [-n]
+
+Lists all entries in the journal
+
+named arguments:
+  -h, --help             show this help message and exit
+  -r                     Reverse sort direction (default: false)
+  -n                     Sort the results by name (default: TIME)
+```
 
 ### Show all entries, reverse-sorted by name 
 ```
@@ -31,8 +56,9 @@ Some example usages below:
 1     2020-03-05 12:00:00    entry1.md    tag1
 ```
 
+
 ### Add an entry
-`new entry3.md tag1 tag2` (takes you to Vim for editing)
+`>> new entry3.md tag1 tag2` (takes you to Vim for editing)
 
 ### Find entries by tag
 ```
@@ -71,6 +97,8 @@ will open `entry1.md` and `entry2.md` simultaneously, in Vim vertical splits. Th
     * [ ] Adding & removing tags
     * [ ] Changing timestamps????
 * [ ] Selection buffer, for easier tagging & editing
+* [ ] Add ability to import external files, adding creation timestamp & tags
 * [ ] Prefs file:
     * [ ] Recolor tags
     * [ ] Default sort types????
+* [ ] Caching metadata-parsing, so startup is super fast
