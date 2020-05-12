@@ -88,6 +88,7 @@ will open `entry1.md` and `entry2.md` simultaneously, in Vim vertical splits. Th
 ```
 
 ## Future Development
+* [ ] Allow use of several journals at once (e.g. work vs personal)????
 * [ ] Easy user onboarding:
     * [x] Nice onboarding flow to set up `.clijournal` when not already done
     * [ ] Homebrew installation
