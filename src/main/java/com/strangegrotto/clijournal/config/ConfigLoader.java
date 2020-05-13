@@ -1,4 +1,4 @@
-package com.strangegrotto.clijournal;
+package com.strangegrotto.clijournal.config;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -17,10 +17,10 @@ import java.nio.file.Paths;
 import java.util.*;
 
 /**
- * Interprets the CLI arg the user passed in and the config file to return information about the contexts the user
- *  has configured
+ * Class to bootstrap the config, presenting the user with nice workflows to initialize the config if this is their first
+ *  time using the tool
  */
-public class ContextLoader {
+public class ConfigLoader {
     public static class NoSuchContextException extends Exception {
         public NoSuchContextException(String message) {
             super(message);
@@ -37,35 +37,27 @@ public class ContextLoader {
     private final ObjectMapper objectMapper;
     private Optional<ConfigV1> configOpt;
 
-    public ContextLoader(BufferedReader reader) {
+    /**
+     *
+     * @param reader
+     * @throws IOException if the config file can't be read or written
+     * @throws InvalidConfigException if the config was parseable, but had a validation error (meaning we need user action,
+     *   because rewriting the entire config would likely cause user data loss)
+     */
+    public ConfigLoader(BufferedReader reader) {
         this.reader = reader;
         this.objectMapper = new ObjectMapper(new YAMLFactory());
         this.configOpt = Optional.empty();
     }
 
-    /**
-     * Gets the path of the context corresponding to the given context name in the config file
-     * If the config file doesn't exist yet, first runs the user through the workflow to create it
-     * @param contextName Context name to load.
-     * @throws IOException if a unrecoverable error in reading or writing the config file occurred
-     * @throws InvalidConfigException if the config was parseable, but had a validation error (meaning we need user action,
-     *   because rewriting the entire config would likely cause user data loss)
-     * @throws NoSuchContextException if the given context doesn't exist, or if no context was passed in and
-     *   the configured default context doesn't exist in the contexts map.
-     */
-    public Path getContextDirpath(@Nullable String contextName)
-            throws IOException, InvalidConfigException, NoSuchContextException {
-        if (!this.configOpt.isPresent()) {
-            this.configOpt = Optional.of(loadValidConfig(this.reader, this.objectMapper));
+    public ConfigV1 loadConfig() throws IOException, InvalidConfigException {
+        if (this.configOpt.isPresent()) {
+            return this.configOpt.get();
+        } else {
+            ConfigV1 config = loadValidConfig(this.reader, this.objectMapper);
+            this.configOpt = Optional.of(config);
+            return config;
         }
-        ConfigV1 config = this.configOpt.get();
-
-        String actualContextName = contextName != null ? contextName : config.getDefaultContext();
-        Map<String, String> contextDirpaths = config.getContextDirpaths();
-        if (!contextDirpaths.containsKey(actualContextName)) {
-            throw new NoSuchContextException("No context '" + actualContextName + "' was found in configured contexts");
-        }
-        return Paths.get(contextDirpaths.get(actualContextName));
     }
 
     /**

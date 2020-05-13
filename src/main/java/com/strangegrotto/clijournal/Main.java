@@ -9,16 +9,15 @@ import com.strangegrotto.clijournal.commands.CommandResultMetadata;
 import com.strangegrotto.clijournal.commands.CommandResultsRecord;
 import com.strangegrotto.clijournal.commands.ResultReferenceTranslator;
 import com.strangegrotto.clijournal.commands.verbs.*;
+import com.strangegrotto.clijournal.config.ConfigLoader;
+import com.strangegrotto.clijournal.config.ConfigV1;
+import com.strangegrotto.clijournal.config.InvalidConfigException;
 import com.strangegrotto.clijournal.entrystore.EntryStore;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
     private static final Set<String> BLACKLISTED_FILENAME_PATTERNS = Sets.newHashSet(
@@ -28,14 +27,29 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        ConfigLoader configLoader = new ConfigLoader(reader);
 
-        Path journalDirpath = null;
+        ConfigV1 config = null;
         try {
-            journalDirpath = getJournalDirpathFromConfig(reader);
+            config = configLoader.loadConfig();
         } catch (IOException e) {
-            System.out.println("Fatal error reading config: " + e.getMessage());
+            System.out.println("An unrecoverable IO error occurred reading/writing the config file:");
+            System.out.println(e.getMessage());
+            System.exit(1);
+        } catch (InvalidConfigException e) {
+            System.out.println("We parsed the config file successfully, but it failed validation:");
+            System.out.println(e.getMessage());
+            System.out.println("Please correct the config file and re-run the CLI");
             System.exit(1);
         }
+
+        Map<String, String> contextDirpaths = config.getContextDirpaths();
+        String initContext = config.getDefaultContext();
+        if (args.length > 0 && contextDirpaths.containsKey(args[0])) {
+            initContext = args[0];
+            args = Arrays.copyOfRange(args, 1, args.length);
+        }
+        Path journalDirpath = Paths.get(contextDirpaths.get(initContext));
 
         EntryStore entryStore = null;
         try {
@@ -47,6 +61,8 @@ public class Main {
 
         CommandResultsRecord resultsRecord = new CommandResultsRecord();
         ResultReferenceTranslator referenceTranslator = new ResultReferenceTranslator(resultsRecord);
+
+        // TODO add commands to list the context and change the context
         CommandParser commandParser = new CommandParser(resultsRecord).registerCommand(
                 new ListEntriesCommand(entryStore)
         ).registerCommand(
