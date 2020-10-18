@@ -56,7 +56,7 @@ public class Main {
         ).registerCommand(
                 new ListTagsCommand(entryStore)
         ).registerCommand(
-                new FindEntriesCommand(entryStore)
+                new FindEntriesCommand(entryStore, referenceTranslator)
         ).registerCommand(
                 new VimCommand(entryStore, referenceTranslator)
         ).registerCommand(
