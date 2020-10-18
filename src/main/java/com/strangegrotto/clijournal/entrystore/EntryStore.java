@@ -97,12 +97,14 @@ public class EntryStore {
                 .collect(Collectors.toList());
     }
 
+    // TODO allow fuzzy search by name
     public Set<Entry> getByTag(String tag) {
         return this.tagIndex.get(tag).stream()
                 .map(this::buildEntry)
                 .collect(Collectors.toSet());
     }
 
+    // TODO allow exact search by tag
     public Set<Entry> getByName(String keyword) {
         return this.nameIndex.keySet().stream()
                 .filter(name -> name.contains(keyword))

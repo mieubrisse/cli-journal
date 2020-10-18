@@ -1,3 +1,7 @@
+0.1.1
+-----
+* Let `find` command take in references
+
 0.1.0
 -----
 * Add Changelog
