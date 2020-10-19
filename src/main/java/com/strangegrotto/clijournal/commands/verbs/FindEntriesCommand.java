@@ -99,13 +99,6 @@ public class FindEntriesCommand extends AbstractEntryListingCommand {
             return new HashSet<>();
         }
         String dereferencedSearchTerm = dereferencedSearchTerms.get(0);
-
-        // TODO Debugging
-        System.out.println("Search Term: " + dereferencedSearchTerm);
-
-        // TODO Debugging
-        System.out.println("Search Type: " + searchType);
-
         return searchType.getStoreQueryFunc().apply(this.entryStore, dereferencedSearchTerm);
     }
 }
