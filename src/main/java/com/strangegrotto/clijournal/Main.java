@@ -62,6 +62,8 @@ public class Main {
         ).registerCommand(
                 new NewEntryCommand(entryStore, referenceTranslator)
         ).registerCommand(
+                new ChromeCommand(entryStore, referenceTranslator)
+        ).registerCommand(
                 new QuitCommand()
         );
 
