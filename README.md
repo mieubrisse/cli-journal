@@ -13,7 +13,9 @@ will show up in the CLI as:
 ```
 
 ## Installation
-TODO
+1. Run `gradle build` from the root
+1. A `.jar` file will be produced in `build/libs`; run this with `java -jar *.jar`
+
 
 ## Basic Usage
 Start the REPL by running `cli-journal`, then type `help` to show the available commands:
